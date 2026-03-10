@@ -1,32 +1,33 @@
 package madlang;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
-public final class Main {
-  public static void main(String[] args) {
-    if (args.length == 0) {
-      System.err.println("Error: missing input file.");
-      System.err.println("usage: make run FILE=filename.madl");
-      System.exit(1);
-      return;
-    }
+public class Main {
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.err.println("usage: madlang.Main <file.madl>");
+            System.exit(1);
+        }
 
-    String source;
-    try {
-      source = Files.readString(Path.of(args[0]));
-    } catch (IOException e) {
-      System.err.println("Error: failed to read input file: " + args[0]);
-      System.err.println("Reason: " + e.getMessage());
-      System.exit(1);
-      return;
-    }
+        String file = args[0];
+        CharStream input = CharStreams.fromString(Files.readString(Path.of(file)));
 
-    // Source is read successfully; parser/interpreter pipeline is to be implemented.
-    if (source.isEmpty()) {
-      System.err.println("Warning: input file is empty: " + args[0]);
+        MadLangLexer lexer = new MadLangLexer(input);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(ParseErrorListener.INSTANCE);
+
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        MadLangParser parser = new MadLangParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(ParseErrorListener.INSTANCE);
+
+        parser.program();
+
+        System.out.println("parse successful");
     }
-    System.out.println("P3 placeholder main: parser/interpreter pipeline not implemented yet.");
-  }
 }
