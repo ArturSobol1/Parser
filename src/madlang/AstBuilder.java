@@ -231,7 +231,7 @@ public class AstBuilder extends MadLangBaseVisitor<Object> {
             return new Expr.Literal(false);
         }
 
-        if (ctx.IDENT() != null && ctx.args() == null) {
+        if (ctx.IDENT() != null && ctx.getChildCount() == 1) {
             return new Expr.Variable(ctx.IDENT().getText());
         }
 
