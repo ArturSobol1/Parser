@@ -1,3 +1,5 @@
+Partners: Sid Mathur (smathur24@wisc.edu), Artur Sobol (arsobol@wisc.edu)
+
 ## CS536 Assignment P3 — MadLang Parser
 
 ### Overview
