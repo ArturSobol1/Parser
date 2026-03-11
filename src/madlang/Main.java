@@ -2,19 +2,23 @@ package madlang;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import java.util.List;
+
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 
 public class Main {
+
     public static void main(String[] args) throws Exception {
+
         if (args.length != 1) {
             System.err.println("usage: madlang.Main <file.madl>");
             System.exit(1);
         }
 
-        String file = args[0];
-        CharStream input = CharStreams.fromString(Files.readString(Path.of(file)));
+        String source = Files.readString(Path.of(args[0]));
+
+        CharStream input = CharStreams.fromString(source);
 
         MadLangLexer lexer = new MadLangLexer(input);
         lexer.removeErrorListeners();
@@ -26,8 +30,15 @@ public class Main {
         parser.removeErrorListeners();
         parser.addErrorListener(ParseErrorListener.INSTANCE);
 
-        parser.program();
+        MadLangParser.ProgramContext tree = parser.program();
 
-        System.out.println("parse successful");
+        AstBuilder builder = new AstBuilder();
+        List<Stmt> program = builder.build(tree);
+
+        if (program == null) {
+            throw new RuntimeException("AST build failed");
+        }
+
+        System.out.println("ast built successfully");
     }
 }
