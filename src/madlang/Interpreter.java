@@ -99,6 +99,15 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
       for (Stmt statement : statements) {
         execute(statement);
       }
+  
+      Callable mainFunction = lookupFunction("main");
+  
+      if (!mainFunction.params().isEmpty() || mainFunction.returnType() != VarType.INT) {
+        throw new InterpreterError(TYPE_MISMATCH);
+      }
+  
+      mainFunction.invoke(this, List.of());
+  
     } catch (InterpreterError error) {
       System.out.println(error.errorMessage);
     }
